@@ -3,13 +3,26 @@ from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 from langgraph.graph.state import CompiledStateGraph
 from langchain.agents.middleware.types import AgentState
-from src.example_agent.tools.add_numbers import add_numbers
-from src.example_agent.tools.multiply_numbers import multiply_numbers
+from src.example_agent.tools.extract_recipe_from_url import extract_recipe_from_url
+from src.example_agent.tools.list_recipes import list_recipes
+from src.example_agent.tools.view_recipe import view_recipe
+from src.example_agent.tools.save_recipe import save_recipe
+from src.example_agent.tools.view_preferences import view_preferences
+from src.example_agent.tools.add_preference import add_preference
+from src.example_agent.tools.update_preference import update_preference
 from src.common.model_identifiers import ModelIdentifier
 from src.example_agent.prompts.agent import SYSTEM_PROMPT
 
 _model = init_chat_model(model=ModelIdentifier.GPT_5, temperature=0.0, reasoning_effort="low")
-_tools = [add_numbers, multiply_numbers]
+_tools = [
+    extract_recipe_from_url,
+    list_recipes,
+    view_recipe,
+    save_recipe,
+    view_preferences,
+    add_preference,
+    update_preference,
+]
 
 
 # CREATE AGENT INSTANCE
