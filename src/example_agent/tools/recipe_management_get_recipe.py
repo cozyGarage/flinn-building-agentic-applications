@@ -1,6 +1,6 @@
-from langchain_core.tools import tool
-from src.mocks.database.recipe_utils import load_recipes
-from src.example_agent.domain.recipe import Recipe
+from typing import Any
+from langchain.tools import tool, ToolRuntime
+from src.example_agent.agents.state import MealPlannerState
 
 _tool_prompt = """\
 Retrieve full details of a specific recipe using its ID.
@@ -12,16 +12,18 @@ Returns a markdown-formatted string containing the recipe name, ingredients list
 
 
 @tool(description=_tool_prompt)
-def recipe_management_view_recipe(recipe_id: int) -> str:
-    recipes = load_recipes()
-    recipe_id_str = str(recipe_id)
+def recipe_management_get_recipe(
+    recipe_id: int,
+    runtime: ToolRuntime[Any, Any],
+) -> str:
+    state = MealPlannerState.from_raw_state(runtime.state)
+    recipes = state.recipes
 
-    if recipe_id_str not in recipes:
+    # Find recipe
+    recipe = next((r for r in recipes if r.id == recipe_id), None)
+
+    if not recipe:
         return f"Recipe with ID {recipe_id} not found."
-
-    # Reconstruct Recipe object from data
-    raw_recipe = recipes[recipe_id_str]
-    recipe = Recipe(**raw_recipe)
 
     ingredients_md = "\n".join([f"- {ing.quantity}{ing.unit} {ing.name}" for ing in recipe.ingredients])
 

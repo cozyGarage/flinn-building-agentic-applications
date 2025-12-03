@@ -49,10 +49,13 @@ Implement production-quality tools for one sub-domain using best practices for t
 ## Part 3: Add Memory Capabilities ⏳
 
 ### 🎯 TASK
-TBD
+Implement proper memory management using AgentState for persistence and conversation thread summarization.
 
 ### Steps
-TBD
+
+**1: USE THREAD STATE FOR PERSISTENCE:** Move all mocked data storage implementations to instead leverage AgentState for persistence
+
+**2: MANAGE CONVERSATION THREAD:** To reliably leverage the conversation thread to keep short-term memory, implement summarisation middleware to keep the messages thread's context size in check
 
 ---
 

@@ -2,7 +2,8 @@ from typing import Any, Callable, Awaitable
 from langchain_core.messages import ToolMessage
 from langgraph.prebuilt.tool_node import ToolCallRequest
 from langgraph.types import Command
-from langchain.agents.middleware import AgentMiddleware
+from langchain.agents.middleware import AgentMiddleware, SummarizationMiddleware
+from src.common.model_identifiers import ModelIdentifier
 
 
 class HandleToolErrors(AgentMiddleware):
@@ -18,7 +19,7 @@ class HandleToolErrors(AgentMiddleware):
             return handler(request)
         except Exception as e:
             return ToolMessage(
-                content=f"Tool error: Please check your input and try again. ({str(e)})",
+                content=f"Tool error: Use the error message to understand if you can fix the issue: {str(e)}",
                 tool_call_id=request.tool_call["id"],
             )
 
@@ -32,10 +33,17 @@ class HandleToolErrors(AgentMiddleware):
             return await handler(request)
         except Exception as e:
             return ToolMessage(
-                content=f"Tool error: Please check your input and try again. ({str(e)})",
+                content=f"Tool error: Use the error message to understand if you can fix the issue: {str(e)}",
                 tool_call_id=request.tool_call["id"],
             )
 
 
 # Create an instance for use in agents
 handle_tool_errors = HandleToolErrors()
+
+# Summarization middleware to compact message history
+summarization_middleware = SummarizationMiddleware(
+    model=ModelIdentifier.GPT_5_MINI,
+    trigger=("tokens", 10000),
+    keep=("messages", 20),
+)

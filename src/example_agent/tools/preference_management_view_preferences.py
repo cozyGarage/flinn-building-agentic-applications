@@ -1,5 +1,6 @@
-from langchain_core.tools import tool
-from src.mocks.database.preferences_utils import load_preferences
+from typing import Any
+from langchain.tools import tool, ToolRuntime
+from src.example_agent.agents.state import MealPlannerState
 
 _tool_prompt = """\
 Retrieve the current user's dietary preferences and restrictions.
@@ -11,13 +12,13 @@ Returns a formatted string listing all preference types (e.g., "Dietary Restrict
 
 
 @tool(description=_tool_prompt)
-def preference_management_view_preferences() -> str:
-    prefs = load_preferences()
+def preference_management_view_preferences(
+    runtime: ToolRuntime[Any, Any],
+) -> str:
+    state = MealPlannerState.from_raw_state(runtime.state)
+    prefs = state.preferences
 
-    output = []
-    for key, values in prefs.items():
-        display_key = key.replace("_", " ").title()
-        val_str = ", ".join(values) if values else "None"
-        output.append(f"- {display_key}: {val_str}")
+    if not prefs:
+        return "No preferences set."
 
-    return "Current Preferences:\n" + "\n".join(output)
+    return "\n".join([f"- {key.value}: {', '.join(values)}" for key, values in prefs.items()])
