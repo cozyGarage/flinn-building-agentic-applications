@@ -27,10 +27,22 @@ You can use the following diagram as a guide:
 ## Part 2: Implement & Refine Your Tools ⏳
 
 ### 🎯 TASK
-TBD
+Implement production-quality tools for one sub-domain using best practices for tool design and error handling.
 
 ### Steps
-TBD
+
+**1: GO NARROW:** Choose 1 sub-domain to focus on finishing first (*TIP: take recipe management or dietary preferences first)
+
+**2: DO IMPLEMENTATIONS:** Do the tool implementations for that sub-domain (*HACK: write to a local file with k-v dict for persistence)
+
+**3: ENSURE BEST PRACTICES:**
+- Choosing the right tools for agents
+- Naming and namespacing your tools
+- Return meaningful context from your tools
+- Optimizing tool responses for token efficiency
+- Prompt-engineering your tool descriptions
+- Use few-shot in system prompt
+- Handle tool-call errors
 
 ---
 

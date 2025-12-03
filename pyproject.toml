@@ -26,6 +26,7 @@ langgraph-api = "^0.5.27"
 langchain-community = "^0.4.1"
 duckduckgo-search = "^8.1.1"
 ddgs = "^9.9.2"
+beautifulsoup4 = "^4.14.3"
 
 
 [tool.poetry.group.dev]

@@ -1,0 +1,21 @@
+{
+  "1": {
+    "id": 1,
+    "name": "Test Spaghetti",
+    "ingredients": [
+      {
+        "id": "1",
+        "name": "Pasta",
+        "quantity": 500,
+        "unit": "g"
+      },
+      {
+        "id": "2",
+        "name": "Sauce",
+        "quantity": 1,
+        "unit": "jar"
+      }
+    ],
+    "instructions": "Boil pasta. Add sauce."
+  }
+}
