@@ -144,9 +144,12 @@ poetry run poe test:integration
 If checks fail, fix the issues and re-run.
 
 # Optional: Install and enable pre-commit hooks. This installs the pre-commit hooks added in
+
 # `.pre-commit-config.yaml`. Contributors can also install pre-commit globally.
+
 poetry run pip install pre-commit
 poetry run pre-commit install
+
 ## 10) VS Code Integration
 
 - Recommended settings (or use `.vscode/settings.json` in the repo):
