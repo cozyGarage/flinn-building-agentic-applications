@@ -1,0 +1,22 @@
+repos:
+  - repo: local
+    hooks:
+      - id: poe-clean
+        name: Poe clean (format) - poetry run poe clean
+        entry: poetry run poe clean
+        language: system
+        pass_filenames: false
+      - id: poe-check
+        name: Poe check (lint & types) - poetry run poe check
+        entry: poetry run poe check
+        language: system
+        pass_filenames: false
+
+# optional: to run tests as pre-push (commented out because tests are heavier)
+#  - repo: local
+#    hooks:
+#      - id: poe-test-unit
+#        name: Poe unit tests - poetry run poe test:unit
+#        entry: poetry run poe test:unit
+#        language: system
+#        pass_filenames: false

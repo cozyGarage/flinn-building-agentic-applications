@@ -1,0 +1,48 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Poetry: Install",
+            "type": "shell",
+            "command": "poetry install",
+            "group": "build",
+            "presentation": {"echo": true, "reveal": "always"}
+        },
+        {
+            "label": "Poetry: Install Dev",
+            "type": "shell",
+            "command": "poetry install --with dev",
+            "group": "build",
+            "presentation": {"echo": true, "reveal": "always"}
+        },
+        {
+            "label": "Poetry: LangGraph Dev",
+            "type": "shell",
+            "command": "poetry run langgraph dev",
+            "group": "none",
+            "isBackground": true,
+            "presentation": {"echo": true, "reveal": "always", "panel": "new"}
+        },
+        {
+            "label": "Pre-commit: Clean",
+            "type": "shell",
+            "command": "poetry run poe clean",
+            "group": "test",
+            "presentation": {"echo": true, "reveal": "always"}
+        },
+        {
+            "label": "Pre-commit: Check",
+            "type": "shell",
+            "command": "poetry run poe check",
+            "group": "test",
+            "presentation": {"echo": true, "reveal": "always"}
+        },
+        {
+            "label": "Tests: Unit",
+            "type": "shell",
+            "command": "poetry run poe test:unit",
+            "group": "test",
+            "presentation": {"echo": true, "reveal": "always"}
+        }
+    ]
+}

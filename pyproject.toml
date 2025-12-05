@@ -41,6 +41,7 @@ click = ">=8.3.1"
 watchfiles = ">=1.1.1"
 vulture = "^2.14"
 ipykernel = "^7.1.0"
+pre-commit = "^4.5.0"
 
 [tool.poetry.group.eval]
 optional = true
@@ -86,15 +87,16 @@ ignore = [
 exclude = [".git", "__pycache__", ".venv", "build", "dist"]
 max-complexity = 10
 
+# Narrow linters & checks to only scan the repository source & tests folders
 [tool.poe.tasks]
 clean = [
-    { cmd = "black ." },
-    { cmd = "mypy --install-types --non-interactive ." }
+    { cmd = "black src test" },
+    { cmd = "mypy --install-types --non-interactive src" }
 ]
 check = [
-    { cmd = "black --check ." },
-    { cmd = "flake8 ." },
-    { cmd = "mypy ." },
+    { cmd = "black --check src test" },
+    { cmd = "flake8 src test" },
+    { cmd = "mypy src" },
     { cmd = "vulture src/ --min-confidence 80"}
 ]
 # Note: run with PYTHONPATH=. poetry run poe test:unit
