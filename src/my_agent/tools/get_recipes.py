@@ -1,4 +1,6 @@
 from typing import List, Optional, Any, Dict, cast
+from src.common.logging_config import logger
+from src.common.tracing import tracer
 from langchain_core.tools import tool
 from src.my_agent.data.sample_recipes import sample_recipes
 
@@ -23,6 +25,7 @@ def get_recipes(
     """
     tags = tags or []
     results: List[Dict[str, Any]] = []
+    tracer.log_event("get_recipes.start", {"meal_type": meal_type, "tags": tags})
     for r in sample_recipes:
         recipe = cast(Dict[str, Any], r)
         if meal_type and recipe.get("meal_type") != meal_type:
@@ -48,4 +51,6 @@ def get_recipes(
         )
         if len(results) >= limit:
             break
+    tracer.log_event("get_recipes.finish", {"selected": len(results)})
+    logger.info("get_recipes.finish", extra={"selected": len(results)})
     return results

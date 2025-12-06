@@ -1,4 +1,6 @@
 from typing import Dict, List, Any, Tuple
+from src.common.logging_config import logger
+from src.common.tracing import tracer
 from collections import defaultdict
 from langchain_core.tools import tool
 from src.my_agent.data.sample_recipes import sample_recipes
@@ -25,6 +27,8 @@ def generate_shopping_list(recipe_ids: List[str], servings: List[int]) -> List[D
     if len(recipe_ids) != len(servings):
         raise ValueError("recipe_ids and servings must be the same length")
 
+    tracer.log_event("generate_shopping_list.start", {"recipe_ids": recipe_ids, "servings": servings})
+
     totals: Dict[Tuple[str, str], Dict[str, Any]] = defaultdict(lambda: {"qty": 0.0, "unit": None})
 
     for rid, s in zip(recipe_ids, servings):
@@ -42,4 +46,7 @@ def generate_shopping_list(recipe_ids: List[str], servings: List[int]) -> List[D
     for (name, unit), val in totals.items():
         qty = float(val.get("qty", 0.0))
         result.append({"name": name, "qty": round(qty, 2), "unit": unit})
-    return sorted(result, key=lambda r: r["name"])
+    out = sorted(result, key=lambda r: str(r.get("name", "")))
+    tracer.log_event("generate_shopping_list.finish", {"count": len(out)})
+    logger.info("generate_shopping_list.finish", extra={"count": len(out)})
+    return out

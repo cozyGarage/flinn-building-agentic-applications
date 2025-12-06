@@ -1,4 +1,6 @@
 from typing import List, Dict, Any, Optional, cast
+from src.common.logging_config import logger
+from src.common.tracing import tracer
 from langchain_core.tools import tool
 from src.my_agent.data.sample_recipes import sample_recipes
 
@@ -41,4 +43,6 @@ def suggest_meal_plan(days: int = 3, tags: Optional[List[str]] = None) -> Dict[s
             recipe = candidates[(day - 1) % len(candidates)]
             day_plan[mt] = {"id": recipe["id"], "name": recipe["name"], "servings": recipe["servings"]}
         plan[f"day_{day}"] = day_plan
+    tracer.log_event("suggest_meal_plan.finish", {"days": days})
+    logger.info("suggest_meal_plan.finish", extra={"days": days})
     return plan

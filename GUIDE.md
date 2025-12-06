@@ -1,12 +1,11 @@
-
-
 ## How to continue building the meal planner (step-by-step roadmap)
 
 Below are recommended, incremental next steps and technical guidance to grow the project from an example to a robust, production-ready planner.
 
 Essentials (MVP) — next 1–2 days
-   - Add a tool `recipes_api.py` that normalizes external recipes to the sample schema.
-   - Implement caching to avoid repeated calls during development (e.g., file-based or Redis).
+
+- Add a tool `recipes_api.py` that normalizes external recipes to the sample schema.
+- Implement caching to avoid repeated calls during development (e.g., file-based or Redis).
 
 Enhancements (feature parity, 2–7 days)
 
@@ -18,59 +17,68 @@ Observability & Cost Control (continuous)
 
 Observability is essential for debugging agents. LangSmith is already recommended in Hackathon materials; implement it as follows:
 
-1) Environment setup
+1. Environment setup
+
    - Ensure `LANGSMITH_API_KEY` and `LANGSMITH_PROJECT` are configured in `.env` and set in CI secrets.
 
-2) Model & Agent instrumentation
+2. Model & Agent instrumentation
+
    - Attach LangSmith tracer to the chat model or agent if the SDK supports it, or call tracer on agent start/stop.
    - Example flow: Add the tracer to your chat model init or instrument each tool to emit trace events (start, success, failure).
 
-3) Structured logging
+3. Structured logging
+
    - Use the standard `logging` module and configure JSON formatting (for ingestion by log aggregation systems).
    - Log events at these moments: tool start, tool completed, agent decision to call a tool, user request, final answer, error.
    - Example (skeleton):
-      ```python
-      import logging
-      from pythonjsonlogger import jsonlogger
 
-      logger = logging.getLogger("flinn")
-      handler = logging.StreamHandler()
-      handler.setFormatter(jsonlogger.JsonFormatter())
-      logger.addHandler(handler)
-      logger.setLevel(logging.INFO)
+     ```python
+     import logging
+     from pythonjsonlogger import jsonlogger
 
-      logger.info("tool.start", extra={"tool":"get_recipes", "params": {"meal_type":"dinner"}})
-      ```
+     logger = logging.getLogger("flinn")
+     handler = logging.StreamHandler()
+     handler.setFormatter(jsonlogger.JsonFormatter())
+     logger.addHandler(handler)
+     logger.setLevel(logging.INFO)
 
-4) Instrument tool calls
+     logger.info("tool.start", extra={"tool":"get_recipes", "params": {"meal_type":"dinner"}})
+     ```
+
+4. Instrument tool calls
+
    - Annotate each tool's entry and exit with trace / logging metadata (IDs, elapsed time, result size) so you can debug the agent flow and see the LLM decisions.
 
-   ---
+   ***
 
    ## Token & Cost control: practical tips
 
    Monitoring tokens and enforcing quotas is important to avoid run-away costs. The core approach includes using token estimation, limiting tokens, choosing cheaper models, and implementing rate-limits.
 
-   1) Token estimation (prep)
+   1. Token estimation (prep)
+
       - Use `tiktoken` or `langchain`'s token utilities to estimate tokens for prompts and responses.
       - Add a utility: `src/common/token_utils.py` with `estimate_prompt_tokens` & `estimate_response_tokens` to compute approximate cost.
 
-   2) Enforce `max_tokens` & model selection
+   2. Enforce `max_tokens` & model selection
+
       - Use a `max_tokens` cap in model init or when calling LLM; choose a cheaper model for non-critical operations.
       - Add configuration flags for budget thresholds (e.g., `MAX_TOKEN_BUDGET_PER_SESSION`) to be enforced in middleware.
 
-   3) Rate limiting and per-user quotas
+   3. Rate limiting and per-user quotas
+
       - Use `aiolimiter` or `ratelimit` (sync) to limit LLM calls per second globally and per-user.
       - Keep a per-session counter for token usage and reject (or compress) work when the limit is reached.
 
-   4) Fallback strategies to reduce tokens
+   4. Fallback strategies to reduce tokens
+
       - Summarize long context, return brief answers, or switch to a cheaper model when budget is low.
       - Prompt engineering: keep instructions succinct and avoid extremely long example contexts.
 
-   5) Alerts and reporting
+   5. Alerts and reporting
       - Use tracing info and logs to compute hourly/daily token cost and set up alerts for budget spikes.
 
-   ---
+   ***
 
    ## Developer checklist (for the next iteration)
 
@@ -84,10 +92,53 @@ Observability is essential for debugging agents. LangSmith is already recommende
    - [ ] Add integration tests & mock out LLM calls for reliability in CI
    - [ ] Add detailed README with deploy instructions & GitHub Actions CI templates
 
-   ---
+   ***
 
    If you want, I can start implementing the next high-priority item now — recommend adding LangSmith tracing and structured logging first so we can capture early observability. Tell me which feature you'd like to add next and I'll produce a PR with initial code + tests.
+ 
+   ---
 
+   ## LangSmith (LangChain Studio) usage & quick guide
+
+   To view traces emitted by the agent using LangSmith / LangChain Studio, follow these steps:
+
+   1) Create and configure LangSmith API keys:
+
+   ```bash
+   # Add to your .env file (do not commit)
+   LANGSMITH_API_KEY="your_langsmith_api_key"
+   LANGSMITH_PROJECT="flinn-makers-day-meal-planner"
+   LANGSMITH_TRACING=true
+   LANGSMITH_ENDPOINT="https://eu.api.smith.langchain.com"  # optional - match your region
+   ```
+
+   2) Start the local demo or agent while LangSmith env is set:
+
+   ```bash
+   poetry run python -m src.my_agent.agents.demo
+   # or run the LangGraph dev server for Studio integration:
+   poetry run langgraph dev
+   ```
+
+   3) View traces in LangChain Studio / LangSmith:
+      - Visit `https://studio.langchain.com` or your configured region "Studio" URL.
+      - Login and open your `LANGSMITH_PROJECT` or click the Traces section.
+      - Trigger agent actions (get_recipes, suggest_meal_plan, generate_shopping_list) and you should see new traces (or view local `traces.log`).
+
+   4) Local trace file
+      - A local compact trace is also written to `traces.log` in the repository root — useful to debug without external dependencies:
+
+   ```bash
+   tail -n 50 traces.log
+   cat traces.log | jq .
+   ```
+
+   5) Filtering traces
+      - In LangChain Studio, filter traces by agent name, tool name, or by custom metadata fields (tool name, user id, event types).
+      - Use `project` or tags to keep project traces separated.
+
+   Notes
+      - The repository sets up a local `tracer` that writes both to `traces.log` and will attempt to call LangSmith tracer if the `langsmith` SDK is available and configured. This helps during development for easy offline debug.
 
 # GUIDE: Flinn Makers Day — Hackathon Preparation & Day-of Checklist
 
@@ -134,13 +185,13 @@ We made the following changes and additions to the repository to prepare the mea
 - Configured Poetry to create in-project virtualenvs and added `pre-commit` as a dev dependency.
 - Added pre-commit configuration to run `poe clean` and `poe check` and narrowed `poe` tool scans to `src/` and `test/` to avoid scanning `.venv`.
 - Created a minimal meal-planner feature set:
-   - `src/my_agent/data/sample_recipes.py` (seed recipes)
-   - `src/my_agent/tools/get_recipes.py` — recipe lookup by type/tags/calories
-   - `src/my_agent/tools/suggest_meal_plan.py` — simple N-day meal plan generator
-   - `src/my_agent/tools/generate_shopping_list.py` — ingredient consolidation and scaling
-   - `src/my_agent/agents/demo.py` — a runnable demo showcasing the tools
-   - Tests for these tools (`test/unit/test_meal_tools.py`) and a demo-runner for quick validation
 
+  - `src/my_agent/data/sample_recipes.py` (seed recipes)
+  - `src/my_agent/tools/get_recipes.py` — recipe lookup by type/tags/calories
+  - `src/my_agent/tools/suggest_meal_plan.py` — simple N-day meal plan generator
+  - `src/my_agent/tools/generate_shopping_list.py` — ingredient consolidation and scaling
+  - `src/my_agent/agents/demo.py` — a runnable demo showcasing the tools
+  - Tests for these tools (`test/unit/test_meal_tools.py`) and a demo-runner for quick validation
 
 - [x] Configure `~/.zshrc` for pyenv (restart shell or run `exec "$SHELL"`):
 
