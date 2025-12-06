@@ -62,10 +62,19 @@ Implement proper memory management using AgentState for persistence and conversa
 ## Part 4: Convert to a Multi-Agent Architecture ⏳
 
 ### 🎯 TASK
-TBD
+Convert your single ReAct agent into a modular multi-agent system with proper orchestration.
 
 ### Steps
-TBD
+
+**1: MODULARISE & SINGLE-RESPONSIBILITY:** Split up, conceptually, your current tool set so that they form single-responsibility modular sub-domains
+
+**2: CHOOSE ARCHITECTURE:** Choose a multi-agent architecture that makes most sense for you to implement
+
+**3: CHOOSE CONTROL-FLOW PATTERN:** Choose a control flow pattern that best suits your architecture and use-case
+
+**4: IMPLEMENT SUB-AGENTS:** Split your big ReAct agent into the respective sub-agents
+
+**5: ORCHESTRATE:** Implement the sub-agent control flow orchestration logic to enable moving between the respective sub-agents
 
 ---
 
