@@ -49,7 +49,7 @@ Implement production-quality tools for one sub-domain using best practices for t
 ## Part 3: Add Memory Capabilities ✅
 
 ### 🎯 TASK
-Add memory capabilities to enable the agent to maintain conversation context across multiple interactions.
+Implement proper memory management using AgentState for persistence and conversation thread summarization.
 
 ### Steps
 
@@ -58,15 +58,21 @@ Add memory capabilities to enable the agent to maintain conversation context acr
 - Configure the agent to use the checkpointer for state persistence
 - This enables the agent to maintain conversation history within a session
 
-**2: MEMORY FEATURES:**
-- Short-term memory: Conversation state persisted in memory using MemorySaver
-- Enables context retention across multiple agent invocations
-- Supports thread-based conversations (each thread_id maintains separate state)
+**2: USE THREAD STATE FOR PERSISTENCE:**
+- Move all mocked data storage implementations to instead leverage AgentState for persistence
+- Implement custom `MealPlannerState` schema with recipes and preferences
+- Tools can now access and modify state directly through the runtime
 
-**3: USAGE:**
-- When invoking the agent, provide a `thread_id` to maintain conversation context
-- The agent will remember previous messages and tool calls within the same thread
-- Example: `agent.invoke({"messages": [HumanMessage(...)]}, {"configurable": {"thread_id": "user-123"}})`
+**3: MANAGE CONVERSATION THREAD:**
+- Implement summarization middleware to keep the messages thread's context size in check
+- Automatically summarize old messages when token count exceeds threshold (e.g., 10,000 tokens)
+- Keep recent messages (e.g., last 20) while summarizing older context
+
+**4: MEMORY FEATURES:**
+- Short-term memory: Conversation state persisted in memory using MemorySaver
+- State-based persistence: Recipes and preferences stored in AgentState
+- Context management: Automatic summarization to prevent token overflow
+- Supports thread-based conversations (each thread_id maintains separate state)
 
 ---
 

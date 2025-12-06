@@ -1,6 +1,6 @@
-from langchain_core.tools import tool
-from src.example_agent.domain.recipe import Recipe
-from src.mocks.database.recipe_utils import load_recipes
+from typing import Any
+from langchain.tools import tool, ToolRuntime
+from src.example_agent.agents.state import MealPlannerState
 
 _tool_prompt = """\
 List all stored recipes in the database.
@@ -12,13 +12,13 @@ Returns a list of recipe names and their corresponding IDs (e.g., "Pasta Carbona
 
 
 @tool(description=_tool_prompt)
-def recipe_management_list_recipes() -> str:
-    recipes = load_recipes()
+def recipe_management_list_recipes(
+    runtime: ToolRuntime[Any, Any],
+) -> str:
+    state = MealPlannerState.from_raw_state(runtime.state)
+    recipes = state.recipes
 
     if not recipes:
         return "No recipes found in the recipe book."
 
-    validated_recipies = [Recipe(**data) for data in recipes.values()]
-    name_id_pairs = [(recipe.name, recipe.id) for recipe in validated_recipies]
-
-    return "\n".join([f"{name} (ID: {id})" for name, id in name_id_pairs])
+    return "\n".join([f"{recipe.name} (ID: {recipe.id})" for recipe in recipes])
