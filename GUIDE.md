@@ -125,6 +125,29 @@ Observability is essential for debugging agents. LangSmith is already recommende
       - Login and open your `LANGSMITH_PROJECT` or click the Traces section.
       - Trigger agent actions (get_recipes, suggest_meal_plan, generate_shopping_list) and you should see new traces (or view local `traces.log`).
 
+      ### Useful queries & filters inside Studio
+
+      When inspecting traces in Studio, use these filters to find relevant runs quickly:
+      - Filter by project name `flinn-makers-day-meal-planner`.
+      - Search for the `demo.start` event or `demo.finish` to find runs initiated by the demo.
+      - Use `event:get_recipes.start` or `event:get_recipes.finish` to find recipe search events.
+      - Search by `tool` metadata if you included a `tool` field in your logs.
+
+      ### Viewing a trace locally
+      - If you don't want to rely on LangSmith, open the local trace file at `traces.log` (newline-delimited JSON):
+
+      ```bash
+      tail -n 100 traces.log | jq -C
+      ```
+
+      This shows recent per-tool events with timestamps and metadata.
+
+      ### Debug flow example
+      - Start the local server: `poetry run langgraph dev`
+      - Run a demo script to create a trace: `poetry run python -m src.my_agent.agents.demo`
+      - In Studio: locate the new trace and click to view events; you should see our logged events (tool entries & exits) and optionally the model call if the model was instrumented.
+
+
    4) Local trace file
       - A local compact trace is also written to `traces.log` in the repository root — useful to debug without external dependencies:
 
