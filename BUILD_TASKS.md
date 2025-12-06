@@ -24,7 +24,7 @@ You can use the following diagram as a guide:
 
 ---
 
-## Part 2: Implement & Refine Your Tools ✅
+## Part 2: Implement & Refine Your Tools ⏳
 
 ### 🎯 TASK
 Implement production-quality tools for one sub-domain using best practices for tool design and error handling.
@@ -46,7 +46,7 @@ Implement production-quality tools for one sub-domain using best practices for t
 
 ---
 
-## Part 3: Add Memory Capabilities ✅
+## Part 3: Add Memory Capabilities ⏳
 
 ### 🎯 TASK
 Implement proper memory management using AgentState for persistence and conversation thread summarization.
