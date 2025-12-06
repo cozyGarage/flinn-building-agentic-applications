@@ -10,7 +10,7 @@ from src.my_agent.tools.suggest_meal_plan import suggest_meal_plan
 from src.my_agent.tools.generate_shopping_list import generate_shopping_list
 from src.common.logging_config import logger
 from src.common.tracing import tracer
-from src.common.token_utils import estimate_tokens_from_text, estimate_cost
+from src.common.token_utils import estimate_tokens_from_text
 from src.common.rate_limiter import rate_limiter
 
 
@@ -19,7 +19,6 @@ def main() -> None:
     tracer.log_event("demo.start", {"demo": "meal-planner"})
     prompt_estimate_text = "search recipes for dinner vegetarian"
     tokens_est = estimate_tokens_from_text(prompt_estimate_text)
-    cost_est = estimate_cost(tokens_est)
     if not rate_limiter.allow("demo_user", tokens_est):
         print("Rate limit exceeded for demo_user; skipping recipe search")
         return

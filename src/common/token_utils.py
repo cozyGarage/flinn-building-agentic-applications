@@ -1,5 +1,9 @@
+from typing import Any, Optional
+
+tiktoken: Optional[Any] = None
 try:
-    import tiktoken  # type: ignore
+    import tiktoken
+
     _HAS_TIKTOKEN = True
 except Exception:
     tiktoken = None
