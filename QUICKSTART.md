@@ -130,6 +130,17 @@ Expected outputs printed include:
 
 Open the Studio UI to test the agent.
 
+## Demo: Run the Meal Planner tools locally
+
+You can run a small demo script to see the meal planner tools in action:
+
+```bash
+# From repo root
+poetry run python -m src.my_agent.agents.demo
+```
+
+This prints sample recipe queries, suggests a simple meal plan, and generates a consolidated shopping list for sample days.
+
 ## 9) Run Pre-Commit Checks, Lint and Tests
 
 Format & fix issues:
