@@ -7,8 +7,18 @@ from src.example_agent.tools.add_numbers import add_numbers
 from src.example_agent.tools.multiply_numbers import multiply_numbers
 from src.common.model_identifiers import ModelIdentifier
 from src.example_agent.prompts.agent import SYSTEM_PROMPT
+from src.common.tracing import tracer
+from src.common.logging_config import logger
 
-_model = init_chat_model(model=ModelIdentifier.GPT_5, temperature=0.0, reasoning_effort="low")
+try:
+    _model = init_chat_model(
+        model=ModelIdentifier.GPT_5,
+        temperature=0.0,
+        reasoning_effort="low",
+        tracer=getattr(tracer, "client", None),
+    )
+except TypeError:
+    _model = init_chat_model(model=ModelIdentifier.GPT_5, temperature=0.0, reasoning_effort="low")
 _tools = [add_numbers, multiply_numbers]
 
 
@@ -18,3 +28,4 @@ agent: CompiledStateGraph[AgentState[Any], Any, Any, Any] = create_agent(
     _tools,
     system_prompt=SYSTEM_PROMPT,
 )
+logger.info("agent.created", extra={"tools": [getattr(t, "name", repr(t)) for t in _tools]})
